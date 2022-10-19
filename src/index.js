@@ -1,5 +1,5 @@
 
-import * as serialPolyfill from 'web-serial-polyfill';
+import { serial as serialPolyfill } from 'web-serial-polyfill';
 
 
 async function runUSB() {
@@ -30,6 +30,7 @@ async function runSerial() {
     try {
         out.innerHTML = '';
         let serial = serialPolyfill;
+        
         if (navigator.serial) {
             serial = navigator.serial;
             out.innerHTML += '\nWeb Serial API supported. Polyfill not used.'
