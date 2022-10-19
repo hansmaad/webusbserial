@@ -1,0 +1,29 @@
+{
+  "name": "webusbserial",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel src/index.html",
+    "build": "parcel build src/index.html --dist-dir docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hansmaad/webusbserial.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hansmaad/webusbserial/issues"
+  },
+  "homepage": "https://github.com/hansmaad/webusbserial#readme",
+  "dependencies": {
+    "web-serial-polyfill": "^1.0.14"
+  },
+  "devDependencies": {
+    "parcel": "^2.7.0"
+  }
+}
