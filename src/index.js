@@ -1,5 +1,6 @@
 
-import serialPolyfill from 'web-serial-polyfill';
+import * as serialPolyfill from 'web-serial-polyfill';
+
 
 async function runUSB() {
     const out = document.getElementById('outUSB');
