@@ -10,7 +10,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 200px;
+      margin-top: 3em;
+      flex-direction: column;
     }
   </style>
 </head>
@@ -24,14 +25,20 @@
 
   <script type="text/javascript">
     async function run() {
-      const device = await navigator.usb.requestDevice({ filters: [] });
       const out = document.getElementById('out');
-      out.innerHTML = [
-        'productName',
-        'deviceClass',
-        'deviceSubclass',
-        'deviceProtocol',
-      ].map(k => k + ': ' + device[k]).join('\n');
+      try {
+        const device = await navigator.usb.requestDevice({ filters: [] });
+        out.innerHTML = [
+          'productName',
+          'deviceClass',
+          'deviceSubclass',
+          'deviceProtocol',
+        ].map(k => k + ': ' + device[k]).join('\n');
+      }
+      catch (e) {
+        out.innerHTML = e.message;
+      }
+      
 
     }
     document.getElementById('request').addEventListener('click', run);
