@@ -1,82 +1,23 @@
-
-import { serial as serialPolyfill } from 'web-serial-polyfill';
 import { WebUSBSerialDevice } from './ftdi';
-
-async function runUSB() {
-    const out = document.getElementById('outUSB');
-    try {
-      const device = await navigator.usb.requestDevice({ filters: [] });
-      out.innerHTML = [
-        'productName',
-        'deviceClass',
-        'deviceSubclass',
-        'deviceProtocol',
-      ].map(k => k + ': ' + device[k]).join('\n');
-    }
-    catch (e) {
-      out.innerHTML = e.message;
-    }
-}
-
-
-
-let cleanupSerial = null;
-async function runSerial() {
-    if (cleanupSerial) {
-        cleanupSerial();
-        cleanupSerial = null;
-    }
-    const out = document.getElementById('outSerial');
-    try {
-        out.innerHTML = '';
-        let serial = serialPolyfill;
-        
-        if (navigator.serial) {
-            serial = navigator.serial;
-            out.innerHTML += '\nWeb Serial API supported. Polyfill not used.'
-        }
-
-        const port = await serial.requestPort();
-        out.innerHTML = [
-            'usbVendorId',
-            'usbProductId',
-          ].map(k => k + ': ' + port[k]).join('\n');
-
-        const form = document.getElementById('serial-open');
-        const openButton = document.getElementById('serialOpen');
-        form.style.display = 'block';
-        const openPort = async () => {
-            try {
-                const serialOptions = {
-                    baudRate: +document.getElementById('baudRate').value,
-                    dataBits: +document.getElementById('dataBits').value,
-                    stopBits: +document.getElementById('stopBits').value,
-                    parity: document.getElementById('parity').value,
-                };
-                console.log(serialOptions);
-                await port.open(serialOptions);
-                out.innerHTML += '\nopened';
-            }
-            catch (e) {
-                out.innerHTML = e.message;
-            }
-        };
-        openButton.addEventListener('click', openPort);
-        cleanupSerial = () => {
-            cleanupSerial && cleanupSerial();
-            openButton.removeEventListener('click', openPort);
-        };
-    }
-    catch (e) {
-      out.innerHTML = e.message;
-    }
-}
 
 
 let ftdiPort;
 async function runFTDI() {
     const out = document.getElementById('outFTDI');
-    
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'HEX, eg. 01 03 00 FF';
+    input.style.margin = '1em 0';
+    input.value = '01 03 00 34 00 01 C5 C4';
+
+    const sendButton = document.createElement('button');
+    sendButton.type = 'button';
+    sendButton.innerHTML = 'Send';
+
+    out.parentElement.insertBefore(input, out);
+    out.parentElement.insertBefore(sendButton, out);
+
     try {
         out.innerHTML = '';
         const device = new WebUSBSerialDevice({
@@ -94,19 +35,25 @@ async function runFTDI() {
             out.innerHTML += 'Rec: ' + data.join(', ') + '\n';
         });
 
-        let send = async () => {
-            out.innerHTML += 'Send 1, 3, 0, 52, 0, 1, 197, 196\n'
-            const data = new Uint8Array([1, 3, 0, 52, 0, 1, 197, 196 ]);
-            await port.send(data);
-            setTimeout(send, 5000);
-        }
-        send();
+        sendButton.addEventListener('click', () => {
+            const values = input.value.split(' ').map(n => parseInt(n, 16));
+            out.innerHTML += `Send ${values.map(v => v.toString(16)).join(', ')}\n`
+            const data = new Uint8Array([0, 0, 0, ...values, 0, 0, 0]);
+            const _ = port.send(data);
+        });
+
+        // let send = async () => {
+        //     out.innerHTML += 'Send 1, 3, 0, 52, 0, 1, 197, 196\n'
+        //     const data = new Uint8Array([1, 3, 0, 52, 0, 1, 197, 196 ]);
+        //     await port.send(data);
+        //     setTimeout(send, 5000);
+        // }
+        // send();
     }
     catch (e) {
       out.innerHTML = e.message;
     }
 }
 
-document.getElementById('requestUSB').addEventListener('click', runUSB);
-document.getElementById('requestSerial').addEventListener('click', runSerial);
+
 document.getElementById('requestFTDI').addEventListener('click', runFTDI);
