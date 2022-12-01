@@ -1,6 +1,6 @@
 
 import { serial as serialPolyfill } from 'web-serial-polyfill';
-
+import { WebUSBSerialDevice } from './ftdi';
 
 async function runUSB() {
     const out = document.getElementById('outUSB');
@@ -72,5 +72,41 @@ async function runSerial() {
     }
 }
 
+
+let ftdiPort;
+async function runFTDI() {
+    const out = document.getElementById('outFTDI');
+    
+    try {
+        out.innerHTML = '';
+        const device = new WebUSBSerialDevice({
+            overridePortSettings: false,
+            // these are the defaults, this config is only used if above is true
+            baud: 19200,
+            bits: 8,
+            stop: 1,
+            parity: false
+        });
+        // shows browser request for usb device
+        const port = ftdiPort = await device.requestNewPort();
+
+        await port.connect(data => {
+            out.innerHTML += 'Rec: ' + data.join(', ') + '\n';
+        });
+
+        let send = async () => {
+            out.innerHTML += 'Send 1, 3, 0, 52, 0, 1, 197, 196\n'
+            const data = new Uint8Array([1, 3, 0, 52, 0, 1, 197, 196 ]);
+            await port.send(data);
+            setTimeout(send, 5000);
+        }
+        send();
+    }
+    catch (e) {
+      out.innerHTML = e.message;
+    }
+}
+
 document.getElementById('requestUSB').addEventListener('click', runUSB);
 document.getElementById('requestSerial').addEventListener('click', runSerial);
+document.getElementById('requestFTDI').addEventListener('click', runFTDI);
