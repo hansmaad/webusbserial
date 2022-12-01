@@ -697,7 +697,8 @@ class WebUSBSerialPort {
 		    .then(() => {
 
 		    	// let baud = 921600;
-				let baud = 9600;
+				// let baud = 9600;
+				let baud = 19200;
 
 /*		    	console.log("controlTransfer out now for " + this.interfaceNumber)
 		    	console.log("req: " + this.#FTDI_SIO_SET_BAUD_RATE)
