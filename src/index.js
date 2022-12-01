@@ -38,7 +38,7 @@ async function runFTDI() {
         sendButton.addEventListener('click', () => {
             const values = input.value.split(' ').map(n => parseInt(n, 16));
             out.innerHTML += `Send ${values.map(v => v.toString(16)).join(', ')}\n`
-            const data = new Uint8Array([0, 0, 0, ...values, 0, 0, 0]);
+            const data = new Uint8Array(values);
             const _ = port.send(data);
         });
 
