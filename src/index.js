@@ -80,7 +80,7 @@ async function runFTDI() {
     try {
         out.innerHTML = '';
         const device = new WebUSBSerialDevice({
-            overridePortSettings: false,
+            overridePortSettings: true,
             // these are the defaults, this config is only used if above is true
             baud: 19200,
             bits: 8,
