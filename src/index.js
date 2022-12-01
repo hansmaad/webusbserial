@@ -35,20 +35,13 @@ async function runFTDI() {
             out.innerHTML += 'Rec: ' + data.join(', ') + '\n';
         });
 
+        port.send(new Uint8Array([0]));
         sendButton.addEventListener('click', () => {
             const values = input.value.split(' ').map(n => parseInt(n, 16));
             out.innerHTML += `Send ${values.map(v => v.toString(16)).join(', ')}\n`
             const data = new Uint8Array(values);
             const _ = port.send(data);
         });
-
-        // let send = async () => {
-        //     out.innerHTML += 'Send 1, 3, 0, 52, 0, 1, 197, 196\n'
-        //     const data = new Uint8Array([1, 3, 0, 52, 0, 1, 197, 196 ]);
-        //     await port.send(data);
-        //     setTimeout(send, 5000);
-        // }
-        // send();
     }
     catch (e) {
       out.innerHTML = e.message;
